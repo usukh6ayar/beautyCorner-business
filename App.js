@@ -1,12 +1,12 @@
 import { NavigationContainer } from "@react-navigation/native";
-import TabNavigator from "./navigation/TabNavigator";
-import AuthStack from "./navigation/AuthStack";
+import AuthStack, { AuthProvider } from "./src/navigation/AuthStack";
 
 export default function App() {
   return (
-    <NavigationContainer>
-      {/* <TabNavigator /> */}
-      <AuthStack />
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <AuthStack />
+      </NavigationContainer>
+    </AuthProvider>
   );
 }

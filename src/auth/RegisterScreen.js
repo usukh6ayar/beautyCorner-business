@@ -92,7 +92,7 @@ export default function RegisterScreen({ navigation }) {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <Image
-              source={require("../assets/icon.png")}
+              source={require("../../assets/icon.png")}
               style={styles.logo}
               resizeMode="contain"
             />
