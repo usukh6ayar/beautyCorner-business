@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Pressable,
+  SafeAreaView,
+} from "react-native";
 import AppointmentCard from "../components/AppointmentCard";
 import initialAppointments from "../mockdata/appointments";
 
@@ -21,7 +28,7 @@ export default function AppointmentsScreen() {
       : appointments.filter((app) => app.status === selectedFilter);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Захиалгууд</Text>
 
       <View style={styles.filterRow}>
@@ -58,7 +65,7 @@ export default function AppointmentsScreen() {
           />
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

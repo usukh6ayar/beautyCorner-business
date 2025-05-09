@@ -22,22 +22,23 @@ export default function LoginScreen({ navigation }) {
   const validate = () => {
     const newErrors = {};
 
-    if (!email.trim()) {
-      newErrors.email = "Имэйл оруулна уу";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Имэйл хаяг буруу байна";
-    }
+    // if (!email.trim()) {
+    //   newErrors.email = "Имэйл оруулна уу";
+    // } else if (!/\S+@\S+\.\S+/.test(email)) {
+    //   newErrors.email = "Имэйл хаяг буруу байна";
+    // }
 
-    if (!password) {
-      newErrors.password = "Нууц үг оруулна уу";
-    }
+    // if (!password) {
+    //   newErrors.password = "Нууц үг оруулна уу";
+    // }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    // setErrors(newErrors);
+    // return Object.keys(newErrors).length === 0;
   };
 
   const handleLogin = () => {
-    if (!validate()) return;
+    // if (!validate()) return;
+    if (validate()) return;
 
     setIsLoading(true);
 

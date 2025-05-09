@@ -4,6 +4,8 @@ import AppointmentsScreen from "../app/AppointmentsScreen";
 import ServicesScreen from "../app/ServicesScreen";
 import AvailabilityScreen from "../app/AvailabilityScreen";
 import ProfileScreen from "../app/ProfileScreen";
+import HomeScreen from "../app/HomeScreen";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Tab = createBottomTabNavigator();
 
@@ -36,10 +38,10 @@ export default function TabNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Dashboard" component={DashboardScreen} />
+      <Tab.Screen name="Main" component={HomeScreen} />
       <Tab.Screen name="Appointments" component={AppointmentsScreen} />
-      <Tab.Screen name="Customers" component={CustomersScreen} />
-      <Tab.Screen name="Analytics" component={AnalyticsScreen} />
+      <Tab.Screen name="AvailabilityScreen" component={AvailabilityScreen} />
+      {/* <Tab.Screen name="Analytics" component={AnalyticsScreen} /> */}
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

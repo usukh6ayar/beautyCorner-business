@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, FlatList } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const defaultAvailability = {
   monday: "10:00 - 18:00",
@@ -24,7 +25,7 @@ export default function AvailabilityScreen() {
   const days = Object.keys(availability);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Цагийн хуваарь засах</Text>
 
       <FlatList
@@ -41,7 +42,7 @@ export default function AvailabilityScreen() {
           </View>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

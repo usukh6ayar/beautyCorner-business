@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Button } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const [profile, setProfile] = useState({
@@ -19,7 +20,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Профайл засах</Text>
 
       <TextInput
@@ -49,7 +50,7 @@ export default function ProfileScreen() {
       />
 
       <Button title="Хадгалах" onPress={handleSave} />
-    </View>
+    </SafeAreaView>
   );
 }
 
