@@ -1,94 +1,118 @@
+// src/app/AppointmentsScreen.js
+
 import React, { useState } from "react";
 import {
   View,
   Text,
   FlatList,
+  TouchableOpacity,
   StyleSheet,
-  Pressable,
-  SafeAreaView,
 } from "react-native";
+import appointments from "../mockdata/appointments";
 import AppointmentCard from "../components/AppointmentCard";
-import initialAppointments from "../mockdata/appointments";
+import { COLORS, FONTS, SIZES } from "../theme";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const filters = ["all", "pending", "confirmed", "cancelled"];
+const FILTERS = ["Бүгд", "Хүлээгдэж буй", "Хийгдсэн", "Цуцлагдсан"];
+const [allAppointments, setAllAppointments] = useState(appointments);
 
-export default function AppointmentsScreen() {
-  const [appointments, setAppointments] = useState(initialAppointments);
-  const [selectedFilter, setSelectedFilter] = useState("all");
+const handleUpdateStatus = (id, newStatus) => {
+  const updated = allAppointments.map((appt) =>
+    appt.id === id ? { ...appt, status: newStatus } : appt
+  );
+  setAllAppointments(updated);
+};
 
-  const updateStatus = (id, status) => {
-    setAppointments(
-      appointments.map((app) => (app.id === id ? { ...app, status } : app))
-    );
-  };
+const AppointmentsScreen = () => {
+  const [selectedFilter, setSelectedFilter] = useState("Бүгд");
 
-  const filteredAppointments =
-    selectedFilter === "all"
-      ? appointments
-      : appointments.filter((app) => app.status === selectedFilter);
+  const filteredAppointments = appointments.filter((appt) => {
+    if (selectedFilter === "Бүгд") return true;
+    if (selectedFilter === "Хүлээгдэж буй") return appt.status === "pending";
+    if (selectedFilter === "Хийгдсэн") return appt.status === "completed";
+    if (selectedFilter === "Цуцлагдсан") return appt.status === "cancelled";
+  });
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Захиалгууд</Text>
 
-      <View style={styles.filterRow}>
-        {filters.map((status) => (
-          <Pressable
-            key={status}
-            onPress={() => setSelectedFilter(status)}
-            style={[
-              styles.filterButton,
-              selectedFilter === status && styles.activeFilter,
-            ]}
+      {/* Tabs */}
+      <View style={styles.tabContainer}>
+        {FILTERS.map((filter) => (
+          <TouchableOpacity
+            key={filter}
+            onPress={() => setSelectedFilter(filter)}
+            style={[styles.tab, selectedFilter === filter && styles.activeTab]}
           >
             <Text
-              style={
-                selectedFilter === status
-                  ? styles.activeText
-                  : styles.inactiveText
-              }
+              style={[
+                styles.tabText,
+                selectedFilter === filter && styles.activeTabText,
+              ]}
             >
-              {status.toUpperCase()}
+              {filter}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         ))}
       </View>
 
-      <FlatList
-        data={filteredAppointments}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <AppointmentCard
-            data={item}
-            onConfirm={() => updateStatus(item.id, "confirmed")}
-            onCancel={() => updateStatus(item.id, "cancelled")}
-          />
-        )}
-      />
+      {/* Appointment List */}
+      {filteredAppointments.length === 0 ? (
+        <Text style={styles.emptyText}>Ийм төрлийн захиалга алга байна.</Text>
+      ) : (
+        <FlatList
+          data={filteredAppointments}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <AppointmentCard appointment={item} onUpdate={handleUpdateStatus} />
+          )}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </SafeAreaView>
   );
-}
+};
+
+export default AppointmentsScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 16 },
-  title: { fontSize: 20, fontWeight: "bold", marginBottom: 12 },
-  filterRow: { flexDirection: "row", marginBottom: 12 },
-  filterButton: {
-    marginRight: 8,
-    paddingVertical: 6,
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+    padding: SIZES.medium,
+  },
+  title: {
+    fontSize: SIZES.large,
+    fontFamily: FONTS.bold,
+    marginBottom: SIZES.small,
+  },
+  tabContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: SIZES.small,
+  },
+  tab: {
+    paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#aaa",
+    borderRadius: 20,
+    backgroundColor: "#eee",
   },
-  activeFilter: {
-    backgroundColor: "#333",
+  activeTab: {
+    backgroundColor: COLORS.primary,
   },
-  activeText: {
+  tabText: {
+    fontSize: 14,
+    color: COLORS.gray,
+  },
+  activeTabText: {
     color: "#fff",
     fontWeight: "bold",
   },
-  inactiveText: {
-    color: "#333",
+  emptyText: {
+    marginTop: 20,
+    textAlign: "center",
+    fontStyle: "italic",
+    color: COLORS.gray,
   },
 });

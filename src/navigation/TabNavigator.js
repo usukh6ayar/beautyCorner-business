@@ -1,48 +1,59 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import AppointmentsScreen from "../app/AppointmentsScreen";
-import ServicesScreen from "../app/ServicesScreen";
-import AvailabilityScreen from "../app/AvailabilityScreen";
-import ProfileScreen from "../app/ProfileScreen";
+import { Ionicons, Feather } from "@expo/vector-icons";
+
 import HomeScreen from "../app/HomeScreen";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import AppointmentsScreen from "../app/AppointmentsScreen";
+import AvailabilityScreen from "../app/AvailabilityScreen";
+import ServicesScreen from "../app/ServicesScreen";
+import ProfileScreen from "../app/ProfileScreen";
+
+import { COLORS } from "../theme";
 
 const Tab = createBottomTabNavigator();
 
-export default function TabNavigator() {
+const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarIcon: ({ focused, color, size }) => {
+        headerShown: true,
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: COLORS.gray,
+        tabBarLabelStyle: { fontSize: 12 },
+        tabBarIcon: ({ color, size }) => {
           let iconName;
-          if (route.name === "Dashboard")
-            iconName = focused ? "home" : "home-outline";
-          else if (route.name === "Appointments")
-            iconName = focused ? "calendar" : "calendar-outline";
-          else if (route.name === "Customers")
-            iconName = focused ? "people" : "people-outline";
-          else if (route.name === "Analytics")
-            iconName = focused ? "bar-chart" : "bar-chart-outline";
-          else if (route.name === "Profile")
-            iconName = focused ? "person" : "person-outline";
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: "#3B82F6",
-        tabBarInactiveTintColor: "#64748B",
-        tabBarStyle: {
-          backgroundColor: "#FFFFFF",
-          borderTopColor: "#E2E8F0",
-          height: 60,
-          paddingBottom: 8,
+
+          switch (route.name) {
+            case "Нүүр":
+              iconName = "home";
+              break;
+            case "Захиалгууд":
+              iconName = "calendar";
+              break;
+            case "Чөлөөт цаг":
+              iconName = "clock";
+              break;
+            case "Үйлчилгээ":
+              iconName = "scissors";
+              break;
+            case "Профайл":
+              iconName = "user";
+              break;
+            default:
+              iconName = "circle";
+          }
+
+          return <Feather name={iconName} size={size} color={color} />;
         },
       })}
     >
-      <Tab.Screen name="Main" component={HomeScreen} />
-      <Tab.Screen name="Appointments" component={AppointmentsScreen} />
-      <Tab.Screen name="AvailabilityScreen" component={AvailabilityScreen} />
-      {/* <Tab.Screen name="Analytics" component={AnalyticsScreen} /> */}
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Нүүр" component={HomeScreen} />
+      <Tab.Screen name="Захиалгууд" component={AppointmentsScreen} />
+      <Tab.Screen name="Чөлөөт цаг" component={AvailabilityScreen} />
+      <Tab.Screen name="Үйлчилгээ" component={ServicesScreen} />
+      <Tab.Screen name="Профайл" component={ProfileScreen} />
     </Tab.Navigator>
   );
-}
+};
+
+export default TabNavigator;

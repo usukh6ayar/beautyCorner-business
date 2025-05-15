@@ -1,18 +1,23 @@
+// mockdata/appointments.js
+
 export default [
   {
     id: 1,
-    customerName: "Болормаа",
-    service: "Нүүр будалт",
-    time: "14:00",
-    date: "2025-05-08",
+    clientName: "Boldbold Batbold",
+    serviceName: "Hair Styling",
+    price: 15000,
+    date: "2025-05-15",
+    time: "13:00",
     status: "pending",
   },
   {
     id: 2,
-    customerName: "Энхжин",
-    service: "Үс засалт",
-    time: "15:30",
-    date: "2025-05-08",
-    status: "confirmed",
+    clientName: "Tsetsgee Oyungerel",
+    serviceName: "Makeup",
+    price: 30000,
+    date: "2025-05-15",
+    time: "15:00",
+    status: "completed",
   },
+  // ...
 ];

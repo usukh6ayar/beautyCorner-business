@@ -1,14 +1,14 @@
+import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import AuthStack, { AuthProvider } from "./src/navigation/AuthStack";
+import AuthStack from "./src/navigation/AuthStack";
 import TabNavigator from "./src/navigation/TabNavigator";
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // mock login
+
   return (
-    <AuthProvider>
-      <NavigationContainer>
-        <AuthStack />
-        {/* <TabNavigator /> */}
-      </NavigationContainer>
-    </AuthProvider>
+    <NavigationContainer>
+      {isLoggedIn ? <TabNavigator /> : <AuthStack />}
+    </NavigationContainer>
   );
 }
