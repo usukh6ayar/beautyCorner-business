@@ -1,52 +1,85 @@
+// src/components/ServiceCard.js
+
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS, FONTS, SHADOWS, SIZES } from "../theme";
+import { Swipeable } from "react-native-gesture-handler";
 
 export default function ServiceCard({ data, onDelete, onEdit, onPress }) {
-  return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
-      <View style={styles.cardContent}>
-        <View style={styles.serviceInfo}>
-          <Text style={styles.serviceName}>{data.name}</Text>
-          <View style={styles.detailsRow}>
-            <View style={styles.detailItem}>
-              <Feather name="dollar-sign" size={14} color={COLORS.primary} />
-              <Text style={styles.detailText}>
-                ₮{data.price.toLocaleString()}
-              </Text>
-            </View>
-            <View style={styles.separator} />
-            <View style={styles.detailItem}>
-              <Feather name="clock" size={14} color={COLORS.primary} />
-              <Text style={styles.detailText}>{data.duration}</Text>
-            </View>
-          </View>
-        </View>
+  // Render right swipe actions
+  const renderRightActions = (progress, dragX) => {
+    const trans = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [0, 100],
+      extrapolate: "clamp",
+    });
 
-        {(onEdit || onDelete) && (
-          <View style={styles.actions}>
-            {onEdit && (
-              <TouchableOpacity
-                style={[styles.actionButton, styles.editButton]}
-                onPress={onEdit}
-              >
-                <Feather name="edit-2" size={16} color={COLORS.primary} />
-              </TouchableOpacity>
-            )}
+    return (
+      <View style={styles.rightActions}>
+        {onEdit && (
+          <Animated.View style={[{ transform: [{ translateX: trans }] }]}>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.editButton]}
+              onPress={onEdit}
+            >
+              <Feather name="edit-2" size={20} color={COLORS.white} />
+            </TouchableOpacity>
+          </Animated.View>
+        )}
 
-            {onDelete && (
-              <TouchableOpacity
-                style={[styles.actionButton, styles.deleteButton]}
-                onPress={onDelete}
-              >
-                <Feather name="trash-2" size={16} color={COLORS.danger} />
-              </TouchableOpacity>
-            )}
-          </View>
+        {onDelete && (
+          <Animated.View style={[{ transform: [{ translateX: trans }] }]}>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.deleteButton]}
+              onPress={onDelete}
+            >
+              <Feather name="trash-2" size={20} color={COLORS.white} />
+            </TouchableOpacity>
+          </Animated.View>
         )}
       </View>
-    </TouchableOpacity>
+    );
+  };
+
+  return (
+    <Swipeable renderRightActions={renderRightActions}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={onPress}
+        activeOpacity={0.7}
+      >
+        <View style={styles.cardContent}>
+          <View style={styles.serviceInfo}>
+            <Text style={styles.serviceName}>{data.name}</Text>
+            <View style={styles.detailsRow}>
+              <View style={styles.detailItem}>
+                <Feather name="dollar-sign" size={14} color={COLORS.primary} />
+                <Text style={styles.detailText}>
+                  ₮{data.price.toLocaleString()}
+                </Text>
+              </View>
+              <View style={styles.separator} />
+              <View style={styles.detailItem}>
+                <Feather name="clock" size={14} color={COLORS.primary} />
+                <Text style={styles.detailText}>{data.duration}</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Indicator to show swipe available */}
+          <View style={styles.swipeIndicator}>
+            <Feather name="chevron-left" size={18} color={COLORS.gray} />
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Swipeable>
   );
 }
 
@@ -55,7 +88,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderRadius: SIZES.radius,
     padding: SIZES.card_padding,
-    marginBottom: 12,
+    marginHorizontal: SIZES.small,
+    marginVertical: 6,
     ...SHADOWS.small,
   },
   cardContent: {
@@ -90,21 +124,27 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.gray_light,
     marginHorizontal: 12,
   },
-  actions: {
+  swipeIndicator: {
+    opacity: 0.5,
+  },
+  rightActions: {
+    width: 120,
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
   actionButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 50,
+    height: "80%",
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: 8,
+    borderRadius: SIZES.radius,
+    marginRight: 8,
   },
   editButton: {
-    backgroundColor: COLORS.primary + "15",
+    backgroundColor: COLORS.primary,
   },
   deleteButton: {
-    backgroundColor: COLORS.danger + "15",
+    backgroundColor: COLORS.danger,
   },
 });

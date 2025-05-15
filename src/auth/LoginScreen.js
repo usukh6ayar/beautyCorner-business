@@ -4,225 +4,209 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  Pressable,
   TouchableOpacity,
-  ActivityIndicator,
   Image,
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
+import { COLORS, FONTS, SIZES, SHADOWS } from "../theme";
+import { Feather } from "@expo/vector-icons";
+import Button from "../components/Button";
 
-export default function LoginScreen({ navigation }) {
-  const [isLoading, setIsLoading] = useState(false);
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const { login, loading } = useAuth();
 
-  const validate = () => {
-    const newErrors = {};
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Анхааруулга", "Имэйл болон нууц үгээ оруулна уу.");
+      return;
+    }
 
-    // if (!email.trim()) {
-    //   newErrors.email = "Имэйл оруулна уу";
-    // } else if (!/\S+@\S+\.\S+/.test(email)) {
-    //   newErrors.email = "Имэйл хаяг буруу байна";
-    // }
+    const result = await login(email, password);
 
-    // if (!password) {
-    //   newErrors.password = "Нууц үг оруулна уу";
-    // }
-
-    // setErrors(newErrors);
-    // return Object.keys(newErrors).length === 0;
-  };
-
-  const handleLogin = () => {
-    // if (!validate()) return;
-    if (validate()) return;
-
-    setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      navigation.replace("Main");
-    }, 1500);
+    if (!result.success) {
+      Alert.alert(
+        "Алдаа",
+        result.error || "Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу."
+      );
+    }
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
+        style={{ flex: 1 }}
       >
-        <View style={styles.header}>
-          <Image
-            source={require("../../assets/icon.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.title}>Beauty Corner</Text>
-          <Text style={styles.subtitle}>Бизнес удирдлагын систем</Text>
-        </View>
-
-        <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Имэйл хаяг</Text>
-            <TextInput
-              style={[styles.input, errors.email && styles.inputError]}
-              placeholder="example@gmail.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                if (errors.email) setErrors({ ...errors, email: null });
-              }}
-            />
-            {errors.email && (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            )}
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.logoContainer}>
+            {/* Replace with your app logo */}
+            <View style={styles.logoPlaceholder}>
+              <Text style={styles.logoText}>Beauty Corner</Text>
+            </View>
+            <Text style={styles.tagline}>Салон менежментийн систем</Text>
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Нууц үг</Text>
-            <TextInput
-              style={[styles.input, errors.password && styles.inputError]}
-              placeholder="******"
-              secureTextEntry
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                if (errors.password) setErrors({ ...errors, password: null });
-              }}
+          <View style={styles.formContainer}>
+            <View style={styles.inputContainer}>
+              <Feather
+                name="mail"
+                size={20}
+                color={COLORS.gray}
+                style={styles.inputIcon}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Имэйл хаяг"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Feather
+                name="lock"
+                size={20}
+                color={COLORS.gray}
+                style={styles.inputIcon}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Нууц үг"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.eyeIcon}
+              >
+                <Feather
+                  name={showPassword ? "eye-off" : "eye"}
+                  size={20}
+                  color={COLORS.gray}
+                />
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={styles.forgotPassword}>
+              <Text style={styles.forgotPasswordText}>Нууц үгээ мартсан?</Text>
+            </TouchableOpacity>
+
+            <Button
+              title="Нэвтрэх"
+              onPress={handleLogin}
+              loading={loading}
+              disabled={loading}
+              fullWidth
+              style={styles.loginButton}
             />
-            {errors.password && (
-              <Text style={styles.errorText}>{errors.password}</Text>
-            )}
+
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>Бүртгэл байхгүй юу? </Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+                <Text style={styles.registerLink}>Бүртгүүлэх</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-
-          <Pressable style={styles.forgotPassword}>
-            <Text style={styles.forgotPasswordText}>Нууц үгээ мартсан?</Text>
-          </Pressable>
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleLogin}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <Text style={styles.buttonText}>Нэвтрэх</Text>
-            )}
-          </TouchableOpacity>
-
-          <Pressable
-            onPress={() => navigation.navigate("Register")}
-            style={styles.linkContainer}
-          >
-            <Text style={styles.linkText}>
-              Шинэ хэрэглэгч үү? <Text style={styles.link}>Бүртгүүлэх</Text>
-            </Text>
-          </Pressable>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: COLORS.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: SIZES.padding,
+    paddingBottom: SIZES.padding,
     justifyContent: "center",
   },
-  header: {
+  logoContainer: {
     alignItems: "center",
-    marginBottom: 40,
+    marginVertical: SIZES.large * 2,
   },
-  logo: {
+  logoPlaceholder: {
     width: 100,
     height: 100,
-    marginBottom: 16,
+    borderRadius: 50,
+    backgroundColor: COLORS.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    ...SHADOWS.medium,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#333",
+  logoText: {
+    color: COLORS.white,
+    ...FONTS.h3,
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
+  tagline: {
+    marginTop: SIZES.medium,
+    ...FONTS.body,
+    color: COLORS.gray,
   },
-  form: {
-    marginBottom: 20,
+  formContainer: {
+    width: "100%",
   },
   inputContainer: {
-    marginBottom: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.white,
+    borderRadius: SIZES.radius,
+    marginBottom: SIZES.medium,
+    paddingHorizontal: SIZES.small,
+    ...SHADOWS.small,
   },
-  label: {
-    marginBottom: 6,
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#555",
+  inputIcon: {
+    marginRight: SIZES.small,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: "#f9f9f9",
-    fontSize: 16,
+    flex: 1,
+    height: 50,
+    paddingVertical: SIZES.small,
+    ...FONTS.body,
+    color: COLORS.text,
   },
-  inputError: {
-    borderColor: "#ff3b30",
-  },
-  errorText: {
-    color: "#ff3b30",
-    fontSize: 12,
-    marginTop: 4,
-    marginLeft: 4,
+  eyeIcon: {
+    padding: SIZES.small,
   },
   forgotPassword: {
     alignSelf: "flex-end",
-    marginBottom: 16,
+    marginBottom: SIZES.medium,
   },
   forgotPasswordText: {
-    color: "#4A3780",
-    fontSize: 14,
+    ...FONTS.body_semibold,
+    color: COLORS.primary,
   },
-  button: {
-    backgroundColor: "#4A3780",
-    borderRadius: 8,
-    padding: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+  loginButton: {
+    marginTop: SIZES.small,
   },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
+  registerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: SIZES.large,
   },
-  linkContainer: {
-    marginTop: 24,
-    alignItems: "center",
+  registerText: {
+    ...FONTS.body,
+    color: COLORS.gray,
   },
-  linkText: {
-    fontSize: 14,
-    color: "#666",
-  },
-  link: {
-    color: "#4A3780",
-    fontWeight: "600",
+  registerLink: {
+    ...FONTS.body_semibold,
+    color: COLORS.primary,
   },
 });
+
+export default LoginScreen;
