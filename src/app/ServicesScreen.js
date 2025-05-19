@@ -5,96 +5,120 @@ import {
   FlatList,
   StyleSheet,
   TextInput,
-  TouchableOpacity,
   Alert,
   Dimensions,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { MaterialIcons } from "@expo/vector-icons";
-import ServiceCard from "../components/ServiceCard";
-import initialServices from "../mockdata/services";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ServiceCard from "../components/ServiceCard";
+import ScreenHeader from "../components/ScreenHeader";
+import Button from "../components/Button";
+import initialServices from "../mockdata/services";
+import { COLORS, FONTS, SIZES, SHADOWS, SPACING } from "../theme";
 
 const { width } = Dimensions.get("window");
 
-export default function ServicesScreen() {
+export default function ServicesScreen({ navigation }) {
   const [services, setServices] = useState(initialServices);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [duration, setDuration] = useState("");
+  const [category, setCategory] = useState("");
 
   const handleAddService = () => {
-    if (!name || !price || !duration)
-      return Alert.alert("Бүх талбарыг бөглөнө үү.");
+    if (!name || !price || !duration || !category) {
+      Alert.alert("Бүх талбарыг бөглөнө үү.");
+      return;
+    }
     const newService = {
       id: Date.now(),
       name,
       price: parseInt(price),
       duration,
+      category,
     };
     setServices([...services, newService]);
     setName("");
     setPrice("");
     setDuration("");
+    setCategory("");
   };
 
   const handleDelete = (id) => {
     setServices(services.filter((service) => service.id !== id));
   };
 
-  const CustomButton = ({ onPress, title, icon }) => (
-    <TouchableOpacity onPress={onPress} style={styles.buttonContainer}>
-      <LinearGradient
-        colors={["#FFB6C1", "#FFC0CB"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.gradient}
-      >
-        <MaterialIcons name={icon} size={24} color="#fff" />
-        <Text style={styles.buttonText}>{title}</Text>
-      </LinearGradient>
-    </TouchableOpacity>
-  );
+  const handleEdit = (id) => {
+    navigation.navigate("EditServiceScreen", { serviceId: id });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Үйлчилгээнүүд</Text>
-
-      <View style={styles.card}>
+      <ScreenHeader
+        title="Үйлчилгээнүүд"
+        showBackButton
+        onBackPress={() => navigation.goBack()}
+        rightIcon="plus"
+        onRightPress={() => navigation.navigate("AddServiceScreen")}
+      />
+      <View style={styles.formCard}>
+        <Text style={styles.sectionTitle}>Шинэ үйлчилгээ нэмэх</Text>
         <TextInput
           placeholder="Үйлчилгээний нэр"
           value={name}
           onChangeText={setName}
           style={styles.input}
-          placeholderTextColor="#999"
+          placeholderTextColor={COLORS.text_secondary}
+          accessibilityLabel="Үйлчилгээний нэр"
         />
         <TextInput
-          placeholder="Үнэ ₮"
+          placeholder="Ангилал (жишээ: Үсний засалт)"
+          value={category}
+          onChangeText={setCategory}
+          style={styles.input}
+          placeholderTextColor={COLORS.text_secondary}
+          accessibilityLabel="Үйлчилгээний ангилал"
+        />
+        <TextInput
+          placeholder="Үнэ (₮)"
           value={price}
           onChangeText={setPrice}
           keyboardType="numeric"
           style={styles.input}
-          placeholderTextColor="#999"
+          placeholderTextColor={COLORS.text_secondary}
+          accessibilityLabel="Үйлчилгээний үнэ"
         />
         <TextInput
-          placeholder="Үргэлжлэх хугацаа"
+          placeholder="Үргэлжлэх хугацаа (жишээ: 1 цаг)"
           value={duration}
           onChangeText={setDuration}
           style={styles.input}
-          placeholderTextColor="#999"
+          placeholderTextColor={COLORS.text_secondary}
+          accessibilityLabel="Үйлчилгээний хугацаа"
         />
-        <CustomButton
-          title="Шинэ үйлчилгээ нэмэх"
+        <Button
+          title="Нэмэх"
+          variant="gradient"
+          size="large"
+          leftIcon="plus-circle"
+          fullWidth
           onPress={handleAddService}
-          icon="add-circle-outline"
+          style={styles.addButton}
         />
       </View>
-
       <FlatList
         data={services}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <ServiceCard data={item} onDelete={() => handleDelete(item.id)} />
+          <ServiceCard
+            data={item}
+            onDelete={() => handleDelete(item.id)}
+            onEdit={() => handleEdit(item.id)}
+            onPress={() =>
+              navigation.navigate("ServiceDetailsScreen", {
+                serviceId: item.id,
+              })
+            }
+          />
         )}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
@@ -106,57 +130,36 @@ export default function ServicesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FA",
-    padding: 16,
+    backgroundColor: COLORS.background,
+    paddingHorizontal: SPACING.m,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#2C3E50",
-    marginBottom: 20,
-    fontFamily: "System",
+  formCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: SIZES.radius,
+    padding: SPACING.m,
+    marginVertical: SPACING.m,
+    ...SHADOWS.medium,
   },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+  sectionTitle: {
+    ...FONTS.h4,
+    color: COLORS.text,
+    marginBottom: SPACING.m,
   },
   input: {
+    ...FONTS.body,
+    borderWidth: 1,
+    borderColor: COLORS.accent,
+    padding: SPACING.s,
+    borderRadius: SIZES.radius_small,
+    color: COLORS.text,
+    backgroundColor: COLORS.white,
+    marginBottom: SPACING.m,
     height: 50,
-    backgroundColor: "#F8F9FA",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    marginBottom: 12,
-    fontSize: 16,
-    color: "#2C3E50",
   },
-  buttonContainer: {
-    marginTop: 8,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  gradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 14,
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-    marginLeft: 8,
+  addButton: {
+    marginTop: SPACING.s,
   },
   list: {
-    paddingBottom: 20,
+    paddingBottom: SPACING.xl,
   },
 });

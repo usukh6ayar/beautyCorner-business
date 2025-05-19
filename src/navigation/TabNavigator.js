@@ -1,59 +1,61 @@
-import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons, Feather } from "@expo/vector-icons";
-
 import HomeScreen from "../app/HomeScreen";
 import AppointmentsScreen from "../app/AppointmentsScreen";
-import AvailabilityScreen from "../app/AvailabilityScreen";
 import ServicesScreen from "../app/ServicesScreen";
 import ProfileScreen from "../app/ProfileScreen";
-
+import AvailabilityScreen from "../app/AvailabilityScreen";
+import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../theme";
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+export default function MainNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.gray,
-        tabBarLabelStyle: { fontSize: 12 },
         tabBarIcon: ({ color, size }) => {
           let iconName;
-
-          switch (route.name) {
-            case "Нүүр":
-              iconName = "home";
-              break;
-            case "Захиалгууд":
-              iconName = "calendar";
-              break;
-            case "Чөлөөт цаг":
-              iconName = "clock";
-              break;
-            case "Үйлчилгээ":
-              iconName = "scissors";
-              break;
-            case "Профайл":
-              iconName = "user";
-              break;
-            default:
-              iconName = "circle";
-          }
-
+          if (route.name === "Home") iconName = "home";
+          else if (route.name === "Appointments") iconName = "calendar";
+          else if (route.name === "Services") iconName = "scissors";
+          else if (route.name === "Availability") iconName = "clock";
+          else if (route.name === "Profile") iconName = "user";
           return <Feather name={iconName} size={size} color={color} />;
         },
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: COLORS.text_secondary,
+        tabBarStyle: {
+          backgroundColor: COLORS.card,
+          borderTopColor: COLORS.accent,
+        },
+        headerShown: false,
       })}
     >
-      <Tab.Screen name="Нүүр" component={HomeScreen} />
-      <Tab.Screen name="Захиалгууд" component={AppointmentsScreen} />
-      <Tab.Screen name="Чөлөөт цаг" component={AvailabilityScreen} />
-      <Tab.Screen name="Үйлчилгээ" component={ServicesScreen} />
-      <Tab.Screen name="Профайл" component={ProfileScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ title: "Нүүр" }}
+      />
+      <Tab.Screen
+        name="Appointments"
+        component={AppointmentsScreen}
+        options={{ title: "Захиалгууд" }}
+      />
+      <Tab.Screen
+        name="Services"
+        component={ServicesScreen}
+        options={{ title: "Үйлчилгээ" }}
+      />
+      <Tab.Screen
+        name="Availability"
+        component={AvailabilityScreen}
+        options={{ title: "Хуваарь" }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ title: "Профайл" }}
+      />
     </Tab.Navigator>
   );
-};
-
-export default TabNavigator;
+}

@@ -1,12 +1,10 @@
-// src/components/AppointmentCard.js
-
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { COLORS, FONTS, SIZES } from "../theme";
+import { COLORS, FONTS, SIZES, SHADOWS, SPACING } from "../theme";
 
 const getStatusColor = (status) => {
-  switch (status) {
+  switch (status.toLowerCase()) {
     case "completed":
       return COLORS.success;
     case "pending":
@@ -18,33 +16,55 @@ const getStatusColor = (status) => {
   }
 };
 
-const AppointmentCard = ({ appointment }) => {
-  const { clientName, serviceName, date, time, price, status } = appointment;
+const AppointmentCard = ({ appointment, onReschedule, onCancel }) => {
+  const { clientName, serviceName, date, time, price, status, stylist } =
+    appointment;
 
   return (
     <View style={styles.card}>
-      <View style={styles.rowBetween}>
-        <Text style={styles.name}>{clientName}</Text>
-        <Text style={[styles.status, { color: getStatusColor(status) }]}>
-          {status}
-        </Text>
+      <View style={styles.header}>
+        <Text style={styles.clientName}>{clientName}</Text>
+        <View
+          style={[
+            styles.statusBadge,
+            { backgroundColor: getStatusColor(status) },
+          ]}
+        >
+          <Text style={styles.statusText}>{status}</Text>
+        </View>
       </View>
 
-      <Text style={styles.service}>
-        {serviceName} - {price.toLocaleString()}₮
-      </Text>
+      <View style={styles.details}>
+        <View style={styles.detailRow}>
+          <Feather name="scissors" size={16} color={COLORS.text_secondary} />
+          <Text style={styles.detailText}>{serviceName}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <Feather name="user" size={16} color={COLORS.text_secondary} />
+          <Text style={styles.detailText}>Stylist: {stylist}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <Feather name="calendar" size={16} color={COLORS.text_secondary} />
+          <Text style={styles.detailText}>
+            {date} at {time}
+          </Text>
+        </View>
+        <View style={styles.detailRow}>
+          <Feather name="dollar-sign" size={16} color={COLORS.text_secondary} />
+          <Text style={styles.detailText}>₮{price.toLocaleString()}</Text>
+        </View>
+      </View>
 
-      <View style={styles.row}>
-        <Feather name="calendar" size={16} color={COLORS.gray} />
-        <Text style={styles.datetime}>{date}</Text>
-
-        <Feather
-          name="clock"
-          size={16}
-          color={COLORS.gray}
-          style={styles.iconSpacing}
-        />
-        <Text style={styles.datetime}>{time}</Text>
+      <View style={styles.actions}>
+        <TouchableOpacity style={styles.actionButton} onPress={onReschedule}>
+          <Text style={styles.actionText}>Reschedule</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.cancelButton]}
+          onPress={onCancel}
+        >
+          <Text style={styles.actionText}>Cancel</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -54,46 +74,61 @@ export default AppointmentCard;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: SIZES.medium,
-    marginBottom: SIZES.small,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: COLORS.card,
+    borderRadius: SIZES.card_radius,
+    padding: SIZES.card_padding,
+    margin: SIZES.card_margin,
+    ...SHADOWS.medium,
   },
-  rowBetween: {
+  header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: SPACING.s,
   },
-  name: {
-    fontSize: 16,
-    fontFamily: FONTS.medium,
+  clientName: {
+    ...FONTS.h4,
+    color: COLORS.text,
   },
-  status: {
-    fontSize: 13,
+  statusBadge: {
+    paddingHorizontal: SPACING.s,
+    paddingVertical: SPACING.xs,
+    borderRadius: SIZES.radius_small,
+  },
+  statusText: {
+    ...FONTS.small_bold,
+    color: COLORS.white,
     textTransform: "capitalize",
-    fontWeight: "600",
   },
-  service: {
-    fontSize: 14,
-    color: COLORS.gray,
-    marginBottom: 6,
+  details: {
+    marginBottom: SPACING.m,
   },
-  row: {
+  detailRow: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: SPACING.xs,
   },
-  iconSpacing: {
-    marginLeft: 12,
+  detailText: {
+    ...FONTS.body,
+    color: COLORS.text_secondary,
+    marginLeft: SPACING.xs,
   },
-  datetime: {
-    fontSize: 13,
-    color: COLORS.gray,
-    marginLeft: 4,
+  actions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  actionButton: {
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.s,
+    borderRadius: SIZES.radius,
+    marginLeft: SPACING.s,
+  },
+  cancelButton: {
+    backgroundColor: COLORS.danger,
+  },
+  actionText: {
+    ...FONTS.body_semibold,
+    color: COLORS.white,
   },
 });

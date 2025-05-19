@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ScreenHeader from "../components/ScreenHeader";
+import Button from "../components/Button";
+import { COLORS, FONTS, SIZES, SHADOWS, SPACING } from "../theme";
 
 const defaultAvailability = {
   monday: "10:00 - 18:00",
@@ -22,39 +25,79 @@ export default function AvailabilityScreen() {
     }));
   };
 
+  const handleSave = () => {
+    // TODO: Save availability to backend or local storage
+    console.log("Saving availability:", availability);
+  };
+
   const days = Object.keys(availability);
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Цагийн хуваарь засах</Text>
-
+      <ScreenHeader title="Цагийн хуваарь засах" showBackButton />
       <FlatList
         data={days}
         keyExtractor={(item) => item}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <Text style={styles.day}>{item.toUpperCase()}</Text>
+            <Text style={styles.day}>
+              {item.charAt(0).toUpperCase() + item.slice(1)}
+            </Text>
             <TextInput
               value={availability[item]}
               onChangeText={(val) => handleChange(item, val)}
               style={styles.input}
+              placeholder="Жишээ: 10:00 - 18:00"
+              placeholderTextColor={COLORS.text_secondary}
             />
           </View>
         )}
+        contentContainerStyle={styles.listContainer}
+      />
+      <Button
+        title="Хадгалах"
+        variant="gradient"
+        size="large"
+        leftIcon="save"
+        fullWidth
+        onPress={handleSave}
+        style={styles.saveButton}
       />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 16 },
-  title: { fontSize: 20, fontWeight: "bold", marginBottom: 16 },
-  row: { marginBottom: 12 },
-  day: { fontWeight: "bold", marginBottom: 4 },
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+    paddingHorizontal: SPACING.m,
+  },
+  row: {
+    marginBottom: SPACING.m,
+    backgroundColor: COLORS.card,
+    padding: SPACING.m,
+    borderRadius: SIZES.radius,
+    ...SHADOWS.small,
+  },
+  day: {
+    ...FONTS.h5,
+    color: COLORS.text,
+    marginBottom: SPACING.s,
+  },
   input: {
+    ...FONTS.body,
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 8,
-    borderRadius: 6,
+    borderColor: COLORS.accent,
+    padding: SPACING.s,
+    borderRadius: SIZES.radius_small,
+    color: COLORS.text,
+    backgroundColor: COLORS.white,
+  },
+  listContainer: {
+    paddingBottom: SPACING.xl,
+  },
+  saveButton: {
+    margin: SPACING.m,
   },
 });

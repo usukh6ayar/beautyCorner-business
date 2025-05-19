@@ -4,9 +4,12 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  View,
+  Platform,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { COLORS, FONTS, SHADOWS, SIZES } from "../theme";
+import { LinearGradient } from "expo-linear-gradient";
+import { COLORS, FONTS, SHADOWS, SIZES, SPACING } from "../theme";
 
 export default function Button({
   title,
@@ -15,14 +18,13 @@ export default function Button({
   textStyle,
   disabled = false,
   loading = false,
-  variant = "primary", // primary, secondary, outline, ghost
+  variant = "primary", // primary, secondary, outline, ghost, success, danger, warning, gradient
   size = "medium", // small, medium, large
   leftIcon,
   rightIcon,
   iconSize,
   fullWidth = false,
 }) {
-  // Define variant styles
   const getVariantStyle = () => {
     switch (variant) {
       case "secondary":
@@ -37,93 +39,91 @@ export default function Button({
           borderWidth: 1,
         };
       case "ghost":
-        return {
-          backgroundColor: "transparent",
-          borderWidth: 0,
-        };
+        return { backgroundColor: "transparent", borderWidth: 0 };
       case "success":
-        return {
-          backgroundColor: COLORS.success,
-          borderColor: COLORS.success,
-        };
+        return { backgroundColor: COLORS.success, borderColor: COLORS.success };
       case "danger":
-        return {
-          backgroundColor: COLORS.danger,
-          borderColor: COLORS.danger,
-        };
+        return { backgroundColor: COLORS.danger, borderColor: COLORS.danger };
       case "warning":
-        return {
-          backgroundColor: COLORS.warning,
-          borderColor: COLORS.warning,
-        };
+        return { backgroundColor: COLORS.warning, borderColor: COLORS.warning };
+      case "gradient":
+        return { backgroundColor: "transparent", borderWidth: 0 };
       default:
-        return {
-          backgroundColor: COLORS.primary,
-          borderColor: COLORS.primary,
-        };
+        return { backgroundColor: COLORS.primary, borderColor: COLORS.primary };
     }
   };
 
-  // Define size styles
   const getSizeStyle = () => {
     switch (size) {
       case "small":
         return {
-          paddingVertical: 8,
-          paddingHorizontal: 12,
+          paddingVertical: SPACING.s,
+          paddingHorizontal: SPACING.m,
+          height: 40,
         };
       case "large":
         return {
-          paddingVertical: 16,
-          paddingHorizontal: 24,
+          paddingVertical: SPACING.l,
+          paddingHorizontal: SPACING.xl,
+          height: 64,
         };
       default:
         return {
-          paddingVertical: 12,
-          paddingHorizontal: 16,
+          paddingVertical: SPACING.m,
+          paddingHorizontal: SPACING.l,
+          height: 56,
         };
     }
   };
 
-  // Define text color based on variant
   const getTextColor = () => {
-    if (variant === "outline") return COLORS.primary;
-    if (variant === "ghost") return COLORS.primary;
+    if (variant === "outline" || variant === "ghost") return COLORS.primary;
     return COLORS.white;
   };
 
-  // Define icon size based on button size
   const getIconSize = () => {
     if (iconSize) return iconSize;
-
     switch (size) {
       case "small":
-        return 14;
-      case "large":
-        return 20;
-      default:
         return 16;
+      case "large":
+        return 24;
+      default:
+        return 20;
     }
   };
 
-  // Loading state
-  if (loading) {
-    return (
-      <TouchableOpacity
+  const renderButtonContent = () => (
+    <>
+      {leftIcon && (
+        <Feather
+          name={leftIcon}
+          size={getIconSize()}
+          color={getTextColor()}
+          style={styles.leftIcon}
+        />
+      )}
+      <Text
         style={[
-          styles.button,
-          getVariantStyle(),
-          getSizeStyle(),
-          fullWidth && styles.fullWidth,
-          disabled && styles.disabled,
-          style,
+          styles.text,
+          { color: getTextColor() },
+          size === "small" && FONTS.small_semibold,
+          size === "large" && FONTS.h4,
+          textStyle,
         ]}
-        disabled={true}
       >
-        <ActivityIndicator color={getTextColor()} size="small" />
-      </TouchableOpacity>
-    );
-  }
+        {title}
+      </Text>
+      {rightIcon && (
+        <Feather
+          name={rightIcon}
+          size={getIconSize()}
+          color={getTextColor()}
+          style={styles.rightIcon}
+        />
+      )}
+    </>
+  );
 
   return (
     <TouchableOpacity
@@ -134,39 +134,36 @@ export default function Button({
         fullWidth && styles.fullWidth,
         disabled && styles.disabled,
         style,
+        Platform.OS === "android" && { elevation: 2 },
       ]}
       onPress={onPress}
-      disabled={disabled}
-      activeOpacity={0.7}
+      disabled={disabled || loading}
+      activeOpacity={0.85}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: disabled || loading }}
     >
-      {leftIcon && (
-        <Feather
-          name={leftIcon}
-          size={getIconSize()}
+      {loading ? (
+        <ActivityIndicator
           color={getTextColor()}
-          style={styles.leftIcon}
+          size="small"
+          style={{ alignSelf: "center" }}
         />
-      )}
-
-      <Text
-        style={[
-          styles.text,
-          { color: getTextColor() },
-          size === "small" && FONTS.small_semibold,
-          size === "large" && FONTS.h5,
-          textStyle,
-        ]}
-      >
-        {title}
-      </Text>
-
-      {rightIcon && (
-        <Feather
-          name={rightIcon}
-          size={getIconSize()}
-          color={getTextColor()}
-          style={styles.rightIcon}
-        />
+      ) : variant === "gradient" ? (
+        <LinearGradient
+          colors={[COLORS.primary_light, COLORS.primary_dark]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[
+            styles.button,
+            getSizeStyle(),
+            fullWidth && styles.fullWidth,
+            { elevation: 0 },
+          ]}
+        >
+          {renderButtonContent()}
+        </LinearGradient>
+      ) : (
+        renderButtonContent()
       )}
     </TouchableOpacity>
   );
@@ -178,21 +175,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: SIZES.radius,
-    ...SHADOWS.small,
+    ...SHADOWS.medium,
   },
   text: {
     ...FONTS.body_semibold,
   },
   disabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
   fullWidth: {
     width: "100%",
   },
   leftIcon: {
-    marginRight: 8,
+    marginRight: SPACING.s,
   },
   rightIcon: {
-    marginLeft: 8,
+    marginLeft: SPACING.s,
   },
 });
