@@ -5,6 +5,7 @@ import TabNavigator from "./src/navigation/TabNavigator";
 import { AuthProvider } from "./src/context/AuthContext";
 import { View, ActivityIndicator } from "react-native";
 import { COLORS } from "./src/theme";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -39,10 +40,12 @@ export default function App() {
   }
 
   return (
-    <AuthProvider initialState={{ isLoggedIn, setIsLoggedIn }}>
-      <NavigationContainer>
-        {isLoggedIn ? <TabNavigator /> : <AuthStack />}
-      </NavigationContainer>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider initialState={{ isLoggedIn, setIsLoggedIn }}>
+        <NavigationContainer>
+          {isLoggedIn ? <TabNavigator /> : <AuthStack />}
+        </NavigationContainer>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }
