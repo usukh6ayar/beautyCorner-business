@@ -57,21 +57,21 @@ export default function Button({
     switch (size) {
       case "small":
         return {
-          paddingVertical: SPACING.s,
+          paddingVertical: SPACING.xs,
           paddingHorizontal: SPACING.m,
-          height: 40,
+          height: 36, // багасгасан
         };
       case "large":
         return {
-          paddingVertical: SPACING.l,
-          paddingHorizontal: SPACING.xl,
-          height: 64,
+          paddingVertical: SPACING.m,
+          paddingHorizontal: SPACING.l,
+          height: 48, // багасгасан
         };
       default:
         return {
-          paddingVertical: SPACING.m,
-          paddingHorizontal: SPACING.l,
-          height: 56,
+          paddingVertical: SPACING.s,
+          paddingHorizontal: SPACING.m,
+          height: 42, // багасгасан
         };
     }
   };
