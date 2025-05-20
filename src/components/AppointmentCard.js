@@ -50,7 +50,6 @@ const AppointmentCard = ({ appointment, onReschedule, onCancel }) => {
           </Text>
         </View>
         <View style={styles.detailRow}>
-          <Feather name="dollar-sign" size={16} color={COLORS.text_secondary} />
           <Text style={styles.detailText}>₮{price.toLocaleString()}</Text>
         </View>
       </View>

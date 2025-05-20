@@ -57,7 +57,6 @@ export default function ServiceCard({ data, onDelete, onEdit, onPress }) {
             <Text style={styles.category}>{data.category}</Text>
             <View style={styles.detailsRow}>
               <View style={styles.detailItem}>
-                <Feather name="dollar-sign" size={16} color={COLORS.primary} />
                 <Text style={styles.detailText}>
                   ₮{data.price.toLocaleString()}
                 </Text>

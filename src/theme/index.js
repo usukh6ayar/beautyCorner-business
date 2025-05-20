@@ -172,10 +172,10 @@ export const SHADOWS = {
 export const SPACING = {
   xs: 4, // Reduced from 4 (unchanged for precision)
   s: 6, // Reduced from 8
-  m: 12, // Reduced from 16
-  l: 18, // Reduced from 24
-  xl: 24, // Reduced from 32
-  xxl: 32, // Reduced from 40
+  m: 12,
+  l: 18,
+  xl: 24,
+  xxl: 32,
 };
 
 export default {
